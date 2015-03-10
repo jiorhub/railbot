@@ -61,10 +61,17 @@ abstract class CollectBuild (client: RailClient, config: ConfigApplication) exte
   def getDurationCollect(build: JsonNode): FiniteDuration = {
     val productionTimeLeft = build.get("productionTimeLeft").asInt(0)
     val lastProductionUpdate = build.get("lastProductionUpdate").asInt(0)
-    (productionTimeLeft + lastProductionUpdate + 30).seconds
+    if ((productionTimeLeft + lastProductionUpdate) > 0)
+      (productionTimeLeft + lastProductionUpdate + CollectBuild.delay).seconds
+    else
+      CollectBuild.delay.seconds
   }
 
   def getBuildId: Integer
 
   def getBuildName: String
+}
+
+object CollectBuild {
+  val delay = 30
 }

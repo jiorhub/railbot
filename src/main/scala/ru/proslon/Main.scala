@@ -22,6 +22,7 @@ object Main extends App {
   // инициализируем конфиг
   val config = injector.instance[ConfigApplication]
   config.loadProperties("client.properties")
+  config.loadProperties("auth.properties")
 
   // логин
   val client = injector.instance[RailClient]
@@ -32,7 +33,8 @@ object Main extends App {
   val userID = client.getUserId
 
   // запускаем задачи
-  //val mainScheduler = system.actorOf(Props(injector.instance[MainTask]), "mainScheduler")
+  val mainScheduler = system.actorOf(Props(injector.instance[MainTask]), "mainScheduler")
+
   val restaurantCollect = system.actorOf(Props(injector.instance[CollectRestaurant]), "restaurantCollect")
   val hotelCollect = system.actorOf(Props(injector.instance[CollectHotel]), "hotelCollect")
   val martCollect = system.actorOf(Props(injector.instance[CollectMart]), "martCollect")
