@@ -16,4 +16,5 @@ project/plugins/project/
 *.iml
 .idea/
 build/
+.gradle/
 src/main/resources/auth.properties
