@@ -1,10 +1,13 @@
 package ru.proslon.railbot.client
 
+import java.io.BufferedReader
+
 import com.google.inject.Inject
 import org.codehaus.jackson.JsonNode
 import org.codehaus.jackson.map.ObjectMapper
 import ru.proslon.railbot.ConfigApplication
 
+import scala.collection.mutable.ArrayBuffer
 import scala.util.matching.Regex
 
 /**
@@ -54,7 +57,7 @@ class BotSiteClient @Inject()(httpClient: BotHttpClient, config: ConfigApplicati
 
     val worldUrl = ConfigApplication.get(config, "client.url.world")
     val response = httpClient.get(worldUrl)
-    val html: String = io.Source.fromInputStream(response.getEntity.getContent).mkString
+    val html: String = io.Source.fromInputStream(response.getEntity.getContent, "UTF-8").mkString
     response.close()
 
     val res: Option[Regex.Match] = pattern.findFirstMatchIn(html)
@@ -80,7 +83,7 @@ class BotSiteClient @Inject()(httpClient: BotHttpClient, config: ConfigApplicati
     )
 
     val response = httpClient.post(selectUrl, data, Map[String, String]())
-    val html: String = io.Source.fromInputStream(response.getEntity.getContent).mkString
+    val html: String = io.Source.fromInputStream(response.getEntity.getContent, "UTF-8").mkString
     response.close()
 
     val res: Option[Regex.Match] = pattern.findFirstMatchIn(html)
@@ -92,7 +95,7 @@ class BotSiteClient @Inject()(httpClient: BotHttpClient, config: ConfigApplicati
 
   def getWorldPageContent(worldUrl: String): String = {
     val response = httpClient.get(worldUrl)
-    io.Source.fromInputStream(response.getEntity.getContent).mkString
+    io.Source.fromInputStream(response.getEntity.getContent, "UTF-8").mkString
   }
 
   def getWorldParams(content: String): Map[String, String] = {

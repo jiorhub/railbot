@@ -58,7 +58,7 @@ class BotRPCClient @Inject()(httpClient: BotHttpClient, config: ConfigApplicatio
     )))
 
     val response: CloseableHttpResponse = httpClient.postJson(url, data, Map("Referer" -> getSWFUrl))
-    val json: String = io.Source.fromInputStream(response.getEntity.getContent).mkString
+    val json: String = io.Source.fromInputStream(response.getEntity.getContent, "UTF-8").mkString
     response.close()
 
     Option(mapper.readValue[JsonNode](json, classOf[JsonNode]))
