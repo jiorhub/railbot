@@ -7,6 +7,7 @@ import com.google.inject.Inject
 import org.codehaus.jackson.JsonNode
 import ru.proslon.railbot.ConfigApplication
 import ru.proslon.railbot.client.RailClient
+import ru.proslon.railbot.entity.Build
 import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext
 import scala.collection.JavaConversions._
@@ -25,12 +26,9 @@ abstract class CollectBuild (client: RailClient, config: ConfigApplication) exte
 
   override def preStart(): Unit = {
     userId = client.getUserId
-    val json = client.getBuilds(userId)
-    if (json.isEmpty)
-      throw new Exception("build "+ getBuildName +" init error!")
 
-    val build = json.get.get("Body").find((b: JsonNode) =>
-      buildId == b.get("type").asInt()
+    val build = client.getBuilds(userId).find((b: Build) =>
+      buildId == b.Type.toInt
     )
 
     if (build.isEmpty)
@@ -51,16 +49,13 @@ abstract class CollectBuild (client: RailClient, config: ConfigApplication) exte
       )
     case Collect =>
       println("Collect build " + getBuildName)
-      val json = client.collectBuild(buildId, userId)
-      if (json.isEmpty)
-        throw new Exception("build "+ getBuildName +" collect error!")
-
-      self ! Start(getDurationCollect(json.get.get("Body")))
+      val build = client.collectBuild(buildId, userId)
+      self ! Start(getDurationCollect(build))
   }
 
-  def getDurationCollect(build: JsonNode): FiniteDuration = {
-    val productionTimeLeft = build.get("productionTimeLeft").asInt(0)
-    val lastProductionUpdate = build.get("lastProductionUpdate").asInt(0)
+  def getDurationCollect(build: Build): FiniteDuration = {
+    val productionTimeLeft = build.productionTimeLeft.toInt
+    val lastProductionUpdate = build.lastProductionUpdate.toInt
     if ((productionTimeLeft + lastProductionUpdate) > 0)
       (productionTimeLeft + lastProductionUpdate + CollectBuild.delay).seconds
     else

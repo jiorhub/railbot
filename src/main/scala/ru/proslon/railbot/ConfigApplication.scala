@@ -22,6 +22,10 @@ class ConfigApplication {
   def apply(key: String): Option[String] = {
     getProperty(key)
   }
+
+  def setProperty(key: String, value: String): Unit = {
+    properties.setProperty(key, value)
+  }
 }
 
 object ConfigApplication {

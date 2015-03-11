@@ -1,5 +1,7 @@
 package ru.proslon.railbot
 
+import org.codehaus.jackson.JsonNode
+
 import scala.concurrent.duration.FiniteDuration
 
 /**
@@ -13,4 +15,5 @@ package object tasks {
   case object Tick
   case class Start(delay: FiniteDuration)
   case object Collect
+  case class Resources(json: JsonNode)
 }

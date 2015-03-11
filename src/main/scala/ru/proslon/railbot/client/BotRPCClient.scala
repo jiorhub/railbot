@@ -44,7 +44,7 @@ class BotRPCClient @Inject()(httpClient: BotHttpClient, config: ConfigApplicatio
     String.format("%s%s/%s?%s", worldUrl, worldParams.getOrElse("assets_dir", ""), "Railnation.swf", flashVars)
   }
 
-  def callMethod(interface: String, method: String, params: Array[AnyRef]): Option[JsonNode] = {
+  def callMethod(interface: String, method: String, params: Array[AnyRef]): String = {
     val url = String.format("%s?interface=%s&method=%s", getRPCUrl, interface, method)
 
     val mapper: ObjectMapper = new ObjectMapper
@@ -60,7 +60,6 @@ class BotRPCClient @Inject()(httpClient: BotHttpClient, config: ConfigApplicatio
     val response: CloseableHttpResponse = httpClient.postJson(url, data, Map("Referer" -> getSWFUrl))
     val json: String = io.Source.fromInputStream(response.getEntity.getContent, "UTF-8").mkString
     response.close()
-
-    Option(mapper.readValue[JsonNode](json, classOf[JsonNode]))
+    json
   }
 }

@@ -3,7 +3,6 @@ package ru.proslon
 import akka.actor._
 import com.google.inject.Guice
 import ru.proslon.railbot.client.RailClient
-import ru.proslon.railbot.client.listeners.LogResponseListener
 import ru.proslon.railbot.tasks._
 import ru.proslon.railbot.{ConfigApplication, RailbotModule}
 
@@ -22,15 +21,16 @@ object Main extends App {
   // инициализируем конфиг
   val config = injector.instance[ConfigApplication]
   config.loadProperties("client.properties")
-  config.loadProperties("auth.properties")
+
+  config.setProperty("client.account.email", args(0))
+  config.setProperty("client.account.password", args(1))
 
   // логин
   val client = injector.instance[RailClient]
   client.logIntoWorld()
 
-  client.addListener(new LogResponseListener)
-
   val userID = client.getUserId
+  println("Login : " + userID)
 
   // запускаем задачи
   val mainScheduler = system.actorOf(Props(injector.instance[MainTask]), "mainScheduler")
@@ -39,6 +39,10 @@ object Main extends App {
   val hotelCollect = system.actorOf(Props(injector.instance[CollectHotel]), "hotelCollect")
   val martCollect = system.actorOf(Props(injector.instance[CollectMart]), "martCollect")
 
+  val checkBalance = system.actorOf(Props(injector.instance[CheckBalanceTask]), "checkBalance")
+  val checkTrainTask = system.actorOf(Props(injector.instance[CheckTrainTask]), "checkTrainTask")
+
+  //system.shutdown()
   system.awaitTermination()
 }
 

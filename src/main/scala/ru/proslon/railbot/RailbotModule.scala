@@ -23,5 +23,8 @@ class RailbotModule extends ScalaModule {
     bind[CollectRestaurant]
     bind[CollectHotel]
     bind[CollectMart]
+
+    bind[CheckBalanceTask]
+    bind[CheckTrainTask]
   }
 }
